@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+  <meta charset="UTF-8">
+  <title></title>
+</head>
+<body ng-app="sample">
+<div ng-controller="test"></div>
+<script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/angularjs/1.2.27/angular.js"></script>
+<script type="text/javascript" src="angular.responsive.js"></script>
+<script type="text/javascript">
+
+  var DEVICE_SMALL = 'small';
+  var DEVICE_MEDIUM = 'medium';
+  var DEVICE_LARGE = 'large';
+
+  angular.module('sample', ['angular.responsive']);
+
+  angular.module('sample')
+    .config(['responsiveProvider', config]);
+
+  function config(responsive) {
+    responsive.registerDevice(DEVICE_SMALL, 0, 640)
+      .registerDevice(DEVICE_MEDIUM, 640, 1280)
+      .registerDevice(DEVICE_LARGE, 1280);
+  }
+
+  angular.module('sample')
+    .controller('test', ['$scope', 'responsive', test]);
+
+  function test($scope, responsive) {
+    responsive.on(DEVICE_SMALL, $scope, function() {
+      console.log(DEVICE_SMALL);
+    });
+
+    responsive.on(DEVICE_MEDIUM, $scope, function() {
+      console.log(DEVICE_MEDIUM);
+    });
+
+    responsive.on(DEVICE_LARGE, $scope, function() {
+      console.log(DEVICE_LARGE);
+    });
+  }
+
+</script>
+</body>
+</html>
