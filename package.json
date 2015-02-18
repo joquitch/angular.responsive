@@ -25,14 +25,5 @@
   "repository": {
     "type": "git",
     "url": "https://github.com/mrydengren/angular.responsive"
-  },
-  "devDependencies": {
-    "del": "^1.1.1",
-    "gulp": "^3.8.11",
-    "gulp-header": "^1.2.2",
-    "gulp-rename": "^1.2.0",
-    "gulp-uglifyjs": "^0.6.0",
-    "require-dir": "^0.1.0",
-    "vinyl-paths": "^1.0.0"
   }
 }
