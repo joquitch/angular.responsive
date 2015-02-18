@@ -121,7 +121,7 @@
 
     this.current = this.previous = this.get();
 
-    this.$window.onresize = angular.bind(this, this.check);
+    this.$window.onresize = throttle(angular.bind(this, this.check), 250);
   }
 
   angular.extend(Device.prototype, {
@@ -167,6 +167,27 @@
   });
 
 
+  function throttle(func /* () => void */, threshold /* number */) /* () => void */ {
+    var timer, previous = +new Date();
+    return function() {
+      function execute() {
+        func.apply(this, arguments);
+        previous = current;
+      }
+
+      var fn = execute.bind(this, arguments);
+
+      var current = +new Date();
+      if (current > (previous + threshold)) {
+        fn();
+      } else {
+        clearTimeout(timer);
+        timer = setTimeout(fn, threshold);
+      }
+    }
+  }
+
+  
   function first(items /* T[] */, predicate /* (T) => boolean */) /* T */ {
     for (var index = 0, length = items.length; index < length; index++) {
       var item = items[index];
