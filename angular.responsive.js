@@ -38,7 +38,11 @@
           callback();
         }
 
-        this.callbacks.on(device, $scope, callback);
+        this.callbacks.on(device, callback);
+
+        $scope.$on('$destroy', angular.bind(this.callbacks, function() {
+          this.off(device, callback);
+        }));
       }
     },
 
@@ -77,17 +81,13 @@
       }
     },
 
-    on: function(device /* string */, $scope /* angular.IScope */, callback /* () => void */) /* R */ {
+    on: function(device /* string */, callback /* () => void */) /* R */ {
       if (!device || !callback) {
         return;
       }
 
       var callbacks = (this.callbacks[device] || (this.callbacks[device] = []));
       callbacks.push(callback);
-
-      $scope.$on('$destroy', angular.bind(this, function() {
-        this.off(device, callback);
-      }));
     },
 
     trigger: function(device /* string */) /* void */ {
