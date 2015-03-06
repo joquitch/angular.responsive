@@ -28,11 +28,13 @@ Original idea by [joquitch](https://github.com/joquitch).
 
   function controller($scope, responsive) {
     responsive.on(DEVICE_SMALL, $scope, function() {
-      // this callback will trigger once when the size of the viewport is within the range of the small device ...
+      // this callback will trigger when the size of the viewport is
+      // within the range of the small device.
     });
 
     responsive.on(DEVICE_LARGE, $scope, function() {
-      // this callback will trigger once when the size of the viewport is within the range of the large device ...
+      // this callback will trigger when the size of the viewport is
+      // within the range of the large device.
     });
   }
 ```
