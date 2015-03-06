@@ -114,7 +114,7 @@
 
     this.current = this.previous = this.get();
 
-    this.$window.onresize = throttle(angular.bind(this, this.check), 250);
+    this.$window.addEventListener('resize', throttle(angular.bind(this, this.check), 250));
   }
 
   angular.extend(Device.prototype, {
@@ -180,7 +180,7 @@
     }
   }
 
-  
+
   function first(items /* T[] */, predicate /* (T) => boolean */) /* T */ {
     for (var index = 0, length = items.length; index < length; index++) {
       var item = items[index];
