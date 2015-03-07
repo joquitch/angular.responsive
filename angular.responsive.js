@@ -55,9 +55,9 @@
   module.constant('Range', Range);
 
   function Range(name /* string */, lower /* number */, upper /* ?: number */) {
-    this.name = ensure.notEmpty(name, 'Missing parameter "name".');
-    this.lower = ensure.notEmpty(lower, 'Missing parameter "lower".');
-    this.upper = upper || Number.MAX_SAFE_INTEGER;
+    this.name = ensure(name, 'name').not().empty();
+    this.lower = ensure(lower, 'lower').positive();
+    this.upper = ensure(upper || Number.MAX_SAFE_INTEGER, 'upper').positive();
   }
 
   angular.extend(Range.prototype, {
@@ -204,17 +204,63 @@
   }
 
 
-  var ensure = {
+  var toString = Object.prototype.toString;
 
-    notEmpty: function(obj, message) {
-      if (obj) {
-        return obj;
-      }
+  var is = {
 
-      throw new Error(message);
+    empty: function(obj) {
+      return obj == null || obj === '';
+    },
+
+    nan: function(obj) {
+      return obj !== obj;
+    },
+
+    number: function(obj) {
+      return !this.nan(obj) && toString.call(obj) === '[object Number]';
+    },
+
+    positive: function(obj) {
+      return this.number(obj) & obj > 0;
     }
 
   };
+
+  function ensure(value, name) {
+    return new Ensure(value, name);
+  }
+
+  function Ensure(value, name) {
+    this.value = value;
+    this.name = name;
+    this.negate = false;
+  }
+
+  angular.extend(Ensure.prototype, {
+
+    _evaluate: function(condition, message) {
+      if (this.negate ? !condition : condition) {
+        this.negate = false;
+        return this.value;
+      }
+
+      throw new Error(message.replace(/\{name\}/g, this.name));
+    },
+
+    not: function() {
+      this.negate = true;
+      return this;
+    },
+
+    empty: function(message) {
+      return this._evaluate(is.empty(this.value), message || '"{name}" cannot be empty.');
+    },
+
+    positive: function(message) {
+      return this._evaluate(is.positive(this.value), message || '"{name}" must be a positive number.');
+    }
+
+  });
 
 
 }(angular, angular.module('angular.responsive', []));
