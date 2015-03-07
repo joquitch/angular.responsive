@@ -55,9 +55,9 @@
   module.constant('Range', Range);
 
   function Range(name /* string */, lower /* number */, upper /* ?: number */) {
-    this.name = name;
-    this.lower = lower;
-    this.upper = upper || Number.MAX_VALUE;
+    this.name = ensure.notEmpty(name, 'Missing parameter "name".');
+    this.lower = ensure.notEmpty(lower, 'Missing parameter "lower".');
+    this.upper = upper || Number.MAX_SAFE_INTEGER;
   }
 
   angular.extend(Range.prototype, {
@@ -202,6 +202,19 @@
 
     return Device.bind(Device, $document, $rootScope, $window);
   }
+
+
+  var ensure = {
+
+    notEmpty: function(obj, message) {
+      if (obj) {
+        return obj;
+      }
+
+      throw new Error(message);
+    }
+
+  };
 
 
 }(angular, angular.module('angular.responsive', []));
