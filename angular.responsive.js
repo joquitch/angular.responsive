@@ -1,8 +1,7 @@
-!function(angular) {
+!function(angular, module) {
   'use strict';
 
-  angular.module('angular.responsive', [])
-    .provider('responsive', [provider]);
+  module.provider('responsive', [provider]);
 
 
   function provider() {
@@ -192,4 +191,4 @@
     return void 0;
   }
 
-}(angular);
+}(angular, angular.module('angular.responsive', []));
