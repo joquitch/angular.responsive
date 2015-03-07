@@ -15,7 +15,7 @@
       return this;
     };
 
-    this.$get = ['$document', '$rootScope', '$window', function($document, $rootScope, $window) {
+    this.$get = ['$document', '$rootScope', '$window', 'Callbacks', function($document, $rootScope, $window, Callbacks) {
       var callbacks = new Callbacks();
       var device = new Device($document, $rootScope, $window, callbacks, this.ranges);
 
@@ -68,6 +68,8 @@
 
   });
 
+
+  module.constant('Callbacks', Callbacks);
 
   function Callbacks() {
     this.callbacks = {};
