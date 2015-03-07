@@ -1,10 +1,10 @@
 !function(angular, module) {
   'use strict';
 
-  module.provider('responsive', [provider]);
+  module.provider('responsive', ['Range', provider]);
 
 
-  function provider() {
+  function provider(Range) {
 
     this.ranges = [];
 
@@ -47,6 +47,23 @@
 
     is: function(device /* string */) /* boolean */ {
       return this.device.is(device);
+    }
+
+  });
+
+
+  module.constant('Range', Range);
+
+  function Range(name /* string */, lower /* number */, upper /* ?: number */) {
+    this.name = name;
+    this.lower = lower;
+    this.upper = upper || Number.MAX_VALUE;
+  }
+
+  angular.extend(Range.prototype, {
+
+    has: function(value /* number */) /* boolean */ {
+      return this.lower < value && value <= this.upper;
     }
 
   });
@@ -139,21 +156,6 @@
 
     is: function(device /* string */) /* boolean */ {
       return this.current === device;
-    }
-
-  });
-
-
-  function Range(name /* string */, lower /* number */, upper /* ?: number */) {
-    this.name = name;
-    this.lower = lower;
-    this.upper = upper || Number.MAX_VALUE;
-  }
-
-  angular.extend(Range.prototype, {
-
-    has: function(value /* number */) /* boolean */ {
-      return this.lower < value && value <= this.upper;
     }
 
   });
