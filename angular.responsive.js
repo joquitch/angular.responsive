@@ -15,9 +15,9 @@
       return this;
     };
 
-    this.$get = ['$document', '$rootScope', '$window', 'Callbacks', function($document, $rootScope, $window, Callbacks) {
+    this.$get = ['Callbacks', 'Device', function(Callbacks, Device) {
       var callbacks = new Callbacks();
-      var device = new Device($document, $rootScope, $window, callbacks, this.ranges);
+      var device = new Device(callbacks, this.ranges);
 
       return new Responsive(callbacks, device);
     }];
@@ -122,77 +122,86 @@
   });
 
 
-  function Device($document /* angular.IDocumentService */, $rootScope /* anguar.IRootScopeService */, $window /* angular.IWindowService */, callbacks /* Callbacks */, ranges /* Range[] */) {
-    this.$document = $document;
-    this.$rootScope = $rootScope;
-    this.$window = $window;
+  module.factory('Device', ['$document', '$rootScope', '$window', factory]);
 
-    this.callbacks = callbacks;
-    this.ranges = ranges;
+  function factory($document, $rootScope, $window) {
 
-    this.current = this.previous = this.get();
+    function throttle(func /* () => void */, threshold /* number */) /* () => void */ {
+      var timer, previous = +new Date();
+      return function() {
+        function execute() {
+          func.apply(this, arguments);
+          previous = current;
+        }
 
-    this.$window.addEventListener('resize', throttle(angular.bind(this, this.check), 250));
-  }
+        var fn = execute.bind(this, arguments);
 
-  angular.extend(Device.prototype, {
-
-    check: function() /* void */ {
-      this.previous = this.current;
-      this.current = this.get();
-
-      if (this.current !== this.previous) {
-        this.callbacks.trigger(this.current);
-        this.$rootScope.$apply();
-      }
-    },
-
-    get: function() /* string */ {
-      var width = this.$window.innerWidth || this.$document.prop('documentElement').clientWidth || this.$document.prop('body').clientWidth;
-      var range = first(this.ranges, function(r) {
-        return r.has(width);
-      });
-
-      return range ? range.name : 'unknown';
-    },
-
-    is: function(device /* string */) /* boolean */ {
-      return this.current === device;
-    }
-
-  });
-
-
-  function throttle(func /* () => void */, threshold /* number */) /* () => void */ {
-    var timer, previous = +new Date();
-    return function() {
-      function execute() {
-        func.apply(this, arguments);
-        previous = current;
-      }
-
-      var fn = execute.bind(this, arguments);
-
-      var current = +new Date();
-      if (current > (previous + threshold)) {
-        fn();
-      } else {
-        clearTimeout(timer);
-        timer = setTimeout(fn, threshold);
-      }
-    }
-  }
-
-
-  function first(items /* T[] */, predicate /* (T) => boolean */) /* T */ {
-    for (var index = 0, length = items.length; index < length; index++) {
-      var item = items[index];
-      if (predicate(item)) {
-        return item;
+        var current = +new Date();
+        if (current > (previous + threshold)) {
+          fn();
+        } else {
+          clearTimeout(timer);
+          timer = setTimeout(fn, threshold);
+        }
       }
     }
 
-    return void 0;
+
+    function first(items /* T[] */, predicate /* (T) => boolean */) /* T */ {
+      for (var index = 0, length = items.length; index < length; index++) {
+        var item = items[index];
+        if (predicate(item)) {
+          return item;
+        }
+      }
+
+      return void 0;
+    }
+
+
+    function Device($document /* angular.IDocumentService */, $rootScope /* anguar.IRootScopeService */, $window /* angular.IWindowService */, callbacks /* Callbacks */, ranges /* Range[] */) {
+      this.$document = $document;
+      this.$rootScope = $rootScope;
+      this.$window = $window;
+
+      this.callbacks = callbacks;
+      this.ranges = ranges;
+
+      this.current = this.previous = this.get();
+
+      this.$window.addEventListener('resize', throttle(angular.bind(this, this.check), 250));
+    }
+
+    angular.extend(Device.prototype, {
+
+      check: function() /* void */ {
+        this.previous = this.current;
+        this.current = this.get();
+
+        if (this.current !== this.previous) {
+          this.callbacks.trigger(this.current);
+          this.$rootScope.$apply();
+        }
+      },
+
+      get: function() /* string */ {
+        var width = this.$window.innerWidth || this.$document.prop('documentElement').clientWidth || this.$document.prop('body').clientWidth;
+        var range = first(this.ranges, function(r) {
+          return r.has(width);
+        });
+
+        return range ? range.name : 'unknown';
+      },
+
+      is: function(device /* string */) /* boolean */ {
+        return this.current === device;
+      }
+
+    });
+
+
+    return Device.bind(Device, $document, $rootScope, $window);
   }
+
 
 }(angular, angular.module('angular.responsive', []));
