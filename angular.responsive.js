@@ -221,7 +221,8 @@
     },
 
     positive: function(obj) {
-      return this.number(obj) & obj > 0;
+      // meh, 0 is not positive, but will do for now.
+      return this.number(obj) & obj >= 0;
     }
 
   };
