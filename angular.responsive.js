@@ -15,12 +15,15 @@
       return this;
     };
 
-    this.$get = ['Callbacks', 'Device', function(Callbacks, Device) {
-      var callbacks = new Callbacks();
-      var device = new Device(callbacks, this.ranges);
+    this.$get = ['Callbacks', 'Device', $get];
 
-      return new Responsive(callbacks, device);
-    }];
+  }
+
+  function $get(Callbacks, Device) {
+    var callbacks = new Callbacks();
+    var device = new Device(callbacks, this.ranges);
+
+    return new Responsive(callbacks, device);
   }
 
 
